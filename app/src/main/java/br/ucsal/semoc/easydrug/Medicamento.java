@@ -20,7 +20,7 @@ public class Medicamento  implements Serializable {
     @Override
     public String toString() {
 
-        return nome+" "+ hora + "" + dosagem;
+        return nome+" "+ hora + " " + dosagem;
     }
 
 
