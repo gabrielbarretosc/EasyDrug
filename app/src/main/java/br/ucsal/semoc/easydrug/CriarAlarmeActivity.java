@@ -88,7 +88,6 @@ public class CriarAlarmeActivity extends Activity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void criarAlarme(View v){
 
-
             nome = editNome.getText().toString();
             dosagem = editDosagem.getText().toString();
             hora = String.valueOf(editHora.getHour()+ ":" +editHora.getMinute());
