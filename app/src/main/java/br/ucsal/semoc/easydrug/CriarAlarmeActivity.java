@@ -5,9 +5,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,8 +21,11 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
-public class CriarAlarmeActivity extends Activity {
+public class CriarAlarmeActivity extends AppCompatActivity {
 
+    private AlarmCursorAdapter adapter;
+    private AlarmDbHelper alarmDbHelper = new AlarmDbHelper(this);
+    Medicamento[] medicamento;
 
     private EditText editNome;
     private EditText editDosagem;
@@ -45,7 +51,6 @@ public class CriarAlarmeActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
                     editNome.setText(null);
                 }
                 return false;
@@ -62,6 +67,10 @@ public class CriarAlarmeActivity extends Activity {
                 return false;
             }
         });
+
+        SQLiteDatabase db = alarmDbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM produto", null);
+        adapter = new AlarmCursorAdapter(this, cursor);
 
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Calendar cal = Calendar.getInstance();
