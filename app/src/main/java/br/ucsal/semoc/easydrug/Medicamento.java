@@ -3,7 +3,7 @@ package br.ucsal.semoc.easydrug;
 import java.io.Serializable;
 
 public class Medicamento  implements Serializable {
-
+    private Integer id = 0;
     private String nome;
     private String dosagem;
     private String hora;
@@ -11,18 +11,12 @@ public class Medicamento  implements Serializable {
 
 
     public Medicamento(String nome, String dosagem, String hora, String data) {
+        this.id = id++;
         this.nome = nome;
         this.dosagem = dosagem;
         this.hora = hora;
         this.data = data;
     }
-
-    @Override
-    public String toString() {
-
-        return nome+" "+ hora + " " + dosagem;
-    }
-
 
     public String getNome() {
         return nome;

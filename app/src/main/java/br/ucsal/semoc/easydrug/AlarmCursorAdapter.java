@@ -22,9 +22,8 @@ public class AlarmCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView textView = (TextView) view.findViewById( R.id.editText);
-        String remedioNome = cursor.getString(
-                cursor.getColumnIndexOrThrow("nome"));
-        textView.setText(remedioNome);
+        TextView textView = (TextView) view.findViewById(R.id.editText);
+        String remedioNome = cursor.getString(cursor.getColumnIndexOrThrow("nome"));
+             textView.setText(remedioNome);
 }
 }

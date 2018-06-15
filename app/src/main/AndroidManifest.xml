@@ -20,15 +20,12 @@
             </intent-filter>
         </activity>
 
-
-        <activity android:name=".CriarAlarmeActivity">
+                <activity android:name=".CriarAlarmeActivity">
         </activity>
 
         <activity
             android:name=".ListaActivity"
             android:label="@string/title_activity_lista"
             android:theme="@style/AppTheme.NoActionBar" />
-
     </application>
-
 </manifest>

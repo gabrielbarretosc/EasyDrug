@@ -1,19 +1,21 @@
 package br.ucsal.semoc.easydrug;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class ListaActivity extends AppCompatActivity {
 
     ListView listView;
-    List<Medicamento> alarmes = new ArrayList<Medicamento>();
+    private AlarmCursorAdapter adapter;
+    private AlarmDbHelper alarmDbHelper = new AlarmDbHelper(this);
 
     @Override
 
@@ -24,32 +26,21 @@ public class ListaActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Intent intent = getIntent();
+        Intent intent = ListaActivity.this.getIntent();
 
-        String nome = intent.getStringExtra("NOME");
-        String dosagem = intent.getStringExtra("DOSAGEM");
-        String hora =  intent.getStringExtra("HORA");
-        String data =  intent.getStringExtra("DATA");
+        AlarmDbHelper AlarmDbHelper = new AlarmDbHelper(this);
+        SQLiteDatabase db = AlarmDbHelper.getWritableDatabase();
 
-        Medicamento medicamento = new Medicamento(nome,dosagem,hora,data);
-        alarmes.add(medicamento);
+        int posicao = intent.getIntExtra("posicao",0);
 
-        ArrayAdapter <Medicamento> adapter = new ArrayAdapter<>(
-                ListaActivity.this, android.R.layout.simple_list_item_1,alarmes
-        );
+        Cursor cursor = db.rawQuery("SELECT nome FROM alarme", null);
+        cursor.moveToFirst();
 
-       listView=(ListView)findViewById(R.id.listView);
-       listView.setAdapter(adapter);
-
-//
-//      listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//          @Override
-//          public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//
-//          }
-//      });
-
-       // }
-
-    }
+        String[] listaAlarme = new String[]{AlarmeContract.DB_NOME,};
+        int[] idViews = new int[]{R.id.editText};
+        SimpleCursorAdapter adaptador = new SimpleCursorAdapter(getBaseContext(),
+                R.layout.activity_lista,cursor,listaAlarme,idViews, 0);
+        listView = (ListView)findViewById(R.id.listView);
+        listView.setAdapter(adaptador);
+}
 }

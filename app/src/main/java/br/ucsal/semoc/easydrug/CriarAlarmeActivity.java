@@ -1,9 +1,8 @@
 package br.ucsal.semoc.easydrug;
 
-import android.app.Activity;
-import android.app.AlarmManager;
+
 import android.app.PendingIntent;
-import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,19 +12,19 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class CriarAlarmeActivity extends AppCompatActivity {
 
     private AlarmCursorAdapter adapter;
     private AlarmDbHelper alarmDbHelper = new AlarmDbHelper(this);
-    Medicamento[] medicamento;
+
+    ArrayList<Medicamento> medicamentos = new ArrayList<>();
 
     private EditText editNome;
     private EditText editDosagem;
@@ -69,30 +68,14 @@ public class CriarAlarmeActivity extends AppCompatActivity {
         });
 
         SQLiteDatabase db = alarmDbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM produto", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM alarme", null);
         adapter = new AlarmCursorAdapter(this, cursor);
 
-        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, 1);
         PendingIntent intent = PendingIntent.getActivity(this, 999, new Intent(this, ListaActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), intent);
     }
-
-    public boolean verificaNome(){
-        if(editNome.getText() == null){
-            return false;
-        }
-        return true;
-    }
-
-    public boolean verificaDosagem(){
-        if(editDosagem == null){
-            return false;
-        }
-        return true;
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void criarAlarme(View v){
@@ -102,15 +85,41 @@ public class CriarAlarmeActivity extends AppCompatActivity {
             hora = String.valueOf(editHora.getHour()+ ":" +editHora.getMinute());
             data = String.valueOf(editData.getDateTextAppearance());
 
-            Intent intent = new Intent(this,ListaActivity.class);
+            Medicamento medicamento = new Medicamento(nome,dosagem,hora,data);
+
+              Intent intent = new Intent(this,ListaActivity.class);
 
             intent.putExtra("NOME",nome);
             intent.putExtra("DOSAGEM",dosagem);
             intent.putExtra("HORA",hora);
             intent.putExtra("DATA",data);
 
+            medicamentos.add(medicamento);
+            addMedicamentoToDB(medicamentos);
+
             startActivity(intent);
 
+    }
+
+    private void addMedicamentoToDB(ArrayList<Medicamento> medicamentos) {
+        SQLiteDatabase db = alarmDbHelper.getWritableDatabase();
+
+        for(Medicamento m : medicamentos){
+
+            //Consulto se já existe produto com este nome poderia ser outro criterio
+            Cursor c = db.rawQuery("SELECT * FROM alarme where nome=?", new String[]{m.getNome()});
+            //se não existe grava
+
+            if(!c.moveToFirst()) {
+                ContentValues values = new ContentValues();
+                values.put(AlarmeContract.AlarmeEntry.COLUNA_NOME_NOME, m.getNome());
+                values.put(AlarmeContract.AlarmeEntry.COLUNA_NOME_DOSAGEM, m.getDosagem());
+                values.put(AlarmeContract.AlarmeEntry.COLUNA_NOME_HORARIO, m.getHora());
+                values.put(AlarmeContract.AlarmeEntry.COLUNA_NOME_DATA, m.getData());
+
+                db.insert(AlarmeContract.AlarmeEntry.TABELA_NOME, null, values);
+            }
+        }
     }
 
 
